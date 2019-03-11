@@ -13,10 +13,11 @@ public final class OutputAssist {
 		int i = 1;
 		for(String option: options) {
 			System.out.println("("+i+")               "+option);
+			i++;
 		}
 		System.out.println("");
 		String input = sc.next();
-		return header;
+		return input;
 		
 	}
 	
@@ -58,6 +59,7 @@ public final class OutputAssist {
 			System.out.println("To make a withdrawl, deposit, or transfer simply type a- followed by the corresponding number displayed to the left of your account information");
 			header = "Otherwise select from one of the following options";
 		}
+		options[2]="Setup Ez transfer";
 		return menuDisplay(header,options,sc);
 		
 	}

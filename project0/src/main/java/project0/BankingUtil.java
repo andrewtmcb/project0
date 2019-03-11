@@ -131,7 +131,8 @@ public final class BankingUtil{
 	    return acctNumber;
 	}
 	
-	public static String validateFormatSSN(String SSN, Map<String,User> bankUsers) throws InvalidInputException, PreExistingKeyException {
+	public static String validateFormatSSN(String SSN) throws InvalidInputException, PreExistingKeyException {
+		Map<String,User> bankUsers = loadUsers();
 		String validSSN ="";
 		if(SSN.length()!=9) {
 			throw new InvalidInputException("invalid SSN");
@@ -158,8 +159,8 @@ public final class BankingUtil{
 		
 	}
 	
-	public static List<String> extractUsernames(Map<String,User> bankUsers) {
-		List<User> users = (List<User>) bankUsers.values();
+	public static List<String> extractUsernames() {
+		Collection<User> users =  loadUsers().values();
 		List<String> usernames = new ArrayList<String>();
 		for(User u: users) {
 			usernames.add(u.getUsername());
@@ -179,19 +180,26 @@ public final class BankingUtil{
 		
 	}
 	
-	public static boolean usernameIsUnique(String username, Map<String,User> bankUsers) {
+	public static boolean usernameIsUnique(String username) {
+		Map<String,User> bankUsers = loadUsers();
 		if(bankUsers==null) {
 			return true;
 		}
-		List<String> usernames= extractUsernames(bankUsers);
+		List<String> usernames= extractUsernames();
 		if(usernames.contains(username)) {
 			return false;
 		}
 		return true;
 	}
-	public static boolean acctNumberIsValid() {
-		return false;
-		
+	public static void approveAccount(Customer c) {
+		Account newAccount = new Account(c,0.0);
+		c.addNewAcct(newAccount.getAcctNumber());
+		Map<String,Account> accounts =loadAccts();
+		Map<String,User> users =loadUsers();
+		accounts.put(newAccount.getAcctNumber(), newAccount);
+		users.replace(c.getSSN(), c);
+		saveAccts(accounts);
+		saveUsers(users);
 	}
 	
 	public static void transfer(String accountNumber0, String accountNumber1,double transferAmount) {
@@ -220,9 +228,15 @@ public final class BankingUtil{
 	
 	
 	public static Account findAccountByNumber(String accountNumber) throws AccountNotFoundException {
-		return null;
-		
+		Map<String,Account> bankAccounts = loadAccts();
+		if(bankAccounts.containsKey(accountNumber)) {
+			return bankAccounts.get(accountNumber);
+		}else {
+			throw new AccountNotFoundException("Account not found");
+		}
 	}
+	
+	
 	
 	
 	

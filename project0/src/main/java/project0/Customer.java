@@ -29,7 +29,7 @@ public class Customer extends User{
 	}
 	
 	public boolean hasEz() {
-		if(ez[0]=="") {
+		if(ez[0].equals("")) {
 			return false;
 		}
 		return true;
@@ -51,8 +51,8 @@ public class Customer extends User{
 		this.acctNumbers.add(acctNumber);
 	}
 	
-	public Customer(String username,String password,String firstName,String lastName,String SSN, Map<String,User> bankUsers) throws InvalidInputException{
-		super(username, password, firstName, lastName, SSN, bankUsers);
+	public Customer(String username,String password,String firstName,String lastName,String SSN) throws InvalidInputException{
+		super(username, password, firstName, lastName, SSN);
 	}
 	
 }

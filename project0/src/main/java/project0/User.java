@@ -22,8 +22,8 @@ public abstract class User implements Serializable {
 
 
 
-	public void setUsername(String username, Map<String,User> bankUsers) throws InvalidInputException {
-		if(BankingUtil.usernameIsUnique(username, bankUsers)) {
+	public void setUsername(String username) throws InvalidInputException {
+		if(BankingUtil.usernameIsUnique(username)) {
 			this.username = username;
 		}else {
 			throw new InvalidInputException("Username must be unique");
@@ -78,9 +78,9 @@ public abstract class User implements Serializable {
 
 
 
-	public void setSSN(String ssnInput,Map<String,User> bankUsers) {
+	public void setSSN(String ssnInput) {
 		try {
-			this.SSN = BankingUtil.validateFormatSSN(ssnInput, bankUsers);
+			this.SSN = BankingUtil.validateFormatSSN(ssnInput);
 		} catch (InvalidInputException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -94,13 +94,13 @@ public abstract class User implements Serializable {
 
 	private static final long serialVersionUID = -5041034682363391888L;
 	
-	public User(String username, String password, String firstName, String lastName, String SSN, Map<String,User> bankUsers) throws InvalidInputException {
+	public User(String username, String password, String firstName, String lastName, String SSN) throws InvalidInputException {
 		super();
-		this.setUsername(username,bankUsers);
+		this.setUsername(username);
 		this.setPassword(password);
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.setSSN(SSN, bankUsers);
+		this.setSSN(SSN);
 	}
 
 }

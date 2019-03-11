@@ -35,14 +35,85 @@ public class CustomerConsole implements Console{
 				options[3]="Setup Ez transfer";
 			}
 			userInput = OutputAssist.accountMenuHybridCustomerView("", options, sc, customer, customersAccounts);
+			
+			
+			
+			
+			
 			if(userInput.startsWith("a-") && userInput.length()==3) {
 				try {
 					selectedAccount = customersAccounts.get(Integer.valueOf(userInput.substring(2)));
+					String[] accountOptions= {"Withdraw","Deposit","Transfer"};
+					userInput = OutputAssist.menuDisplay("Please select one of the following for account: "+selectedAccount.getAcctNumber(), accountOptions, sc);
+					switch (Integer.valueOf(userInput)) { 
+				       
+					
+					case 1: 
+						System.out.println("How much would you like to withdraw?");
+		            	try {
+							selectedAccount.withdrawl(Double.valueOf(sc.next()));
+						} catch (NumberFormatException | InvalidInputException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						};
+			            break; 
+			            
+			  
+			        case 2: 
+			        	System.out.println("How much would you like to deposit?");
+		            	try {
+							selectedAccount.deposit(Double.valueOf(sc.next()));
+						} catch (NumberFormatException | InvalidInputException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+			          break; 
+			        
+			        
+			        
+			        case 3:
+			        		String[] transferInput= {"","",""};
+			            	System.out.println("Please provide the full account number you would like to transfer to");
+			            	transferInput[0]=sc.next();
+			            	System.out.println("How much would you like to transfer?");
+			            	transferInput[1]=sc.next();
+			            	System.out.println("(Y/N) would you like to make this your ez-transfer?");
+			            	transferInput[2]=sc.next();
+			            	try {
+			            		Account accountTo = BankingUtil.findAccountByNumber(transferInput[0]);
+			            		BankingUtil.transfer(selectedAccount, accountTo, Double.valueOf(transferInput[1]));
+			            		if(transferInput[2].toUpperCase().equals("Y")) {
+			            			customer.setEz(selectedAccount.getAcctNumber(), accountTo.getAcctNumber(), accountTo.getUser0().getLastName());
+			            		}
+			            	}	 catch (AccountNotFoundException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+			    
+			            
+			            break; 
+					
+			       default:
+			    	   System.out.println("Invalid section, returning to main menu");
+					}
+					
+					
+					
+					
+					
+					
+					
 				}catch(ArrayIndexOutOfBoundsException e){
 					System.out.println("Invalid account selection");
 					continue;
 				}
-			}else {
+			}
+			
+			
+			
+			
+			
+			else {
 				switch (Integer.valueOf(userInput)) { 
 		       
 				
@@ -65,7 +136,7 @@ public class CustomerConsole implements Console{
 		        case 3: 
 		            if(customer.hasEz()) {
 		            	System.out.println("Y/N you would like to transfer funds from your account: "+ customer.getEz()[0]);
-		            	System.out.println("to "+customer.getEz()[2]+"s account: "+customer.getEz()[1]);
+		            	System.out.println("to Mr/Ms "+customer.getEz()[2]+"'s account: "+customer.getEz()[1]);
 		            	if(sc.next().toUpperCase().equals("Y")) {
 		            		System.out.println("How much would you like to transfer?");
 		            		BankingUtil.transfer(customer.getEz()[0], customer.getEz()[1], Double.valueOf(sc.next()));
@@ -106,6 +177,10 @@ public class CustomerConsole implements Console{
 			System.out.println("          Please confirm password                 ");
 			System.out.println("");
 			String passwordInput2 = sc.next();
+			if(!passwordInput.equals(passwordInput2)) {
+				System.out.println("Passwords do not match!");
+				continue;
+			}
 			System.out.println("          Please enter First Name                 ");
 			System.out.println();
 			String firstNameInput = sc.next();
@@ -114,21 +189,20 @@ public class CustomerConsole implements Console{
 			String lastNameInput = sc.next();
 			System.out.println("          Please enter SSN (with no lines or spaces)");
 			String SSNInput = sc.next();
-			if(!passwordInput.equals(passwordInput2)) {
-				//write message how passwords do not match
-			}else {
-				try {
-					Customer customer = new Customer(usernameInput,passwordInput,firstNameInput,lastNameInput,SSNInput, allUsers);
-					saveUserChanges(customer,allUsers);
-					running = false;
+			
+			try {
+				Customer customer = new Customer(usernameInput,passwordInput,firstNameInput,lastNameInput,SSNInput);
+				allUsers.put(customer.getSSN(), customer);
+				saveUserChanges(customer,allUsers);
+				running = false;
 				} catch (InvalidInputException e) {
-					// TODO write error message reguarding invalid input
-					System.out.println("something went wrong, please try again");
-					e.printStackTrace();
+				// TODO write error message reguarding invalid input
+				System.out.println("something went wrong, please try again");
+				e.printStackTrace();
 				}
 			}
 	}
-}
+
 	
 
 	public void reset() {
@@ -144,6 +218,8 @@ public class CustomerConsole implements Console{
 	}
 	
 	public void saveUserChanges(User customer, Map<String, User> allUsers) {
+		allUsers.replace(customer.getSSN(), customer);
+		BankingUtil.saveUsers(allUsers);
 		
 	}
 	

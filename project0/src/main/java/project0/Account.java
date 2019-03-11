@@ -6,6 +6,13 @@ public class Account {
 	private User user0;
 	private User user1;
 	
+	
+	
+	public User getUser0(){
+		return user0;
+	}
+	
+	
 	public boolean isJointAcct() {
 		if(user1 == null) {
 			return false;
