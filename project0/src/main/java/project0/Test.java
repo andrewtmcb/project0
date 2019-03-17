@@ -9,9 +9,15 @@ import java.util.Scanner;
 
 public class Test {
 	public static void main(String[] args) {
-		Collection<User> c = BankingUtil.loadUsers().values();
-		for(User custy: c) {
-			System.out.println("Name: "+custy.getFirstName()+ "");
+	try {
+		Map<String,User> um = TempDoaForTesting.loadUsers();
+		Collection<User> uc = um.values();
+		for(User u: uc) {
+			System.out.println("Username: "+u.getUsername()+" Password: "+u.getPassword());
 		}
+	} catch (InvalidInputException e) {
+		System.out.println("Something went way wrong");
+		e.printStackTrace();
+	}
 	}
 }

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class User implements Serializable {
+public class User implements Serializable {
 
 	private String username;
 	private String password;
@@ -23,7 +23,7 @@ public abstract class User implements Serializable {
 
 
 	public void setUsername(String username) throws InvalidInputException {
-		if(BankingUtil.usernameIsUnique(username)) {
+		if(BankingUtilAndDOA.usernameIsUnique(username)) {
 			this.username = username;
 		}else {
 			throw new InvalidInputException("Username must be unique");
@@ -80,7 +80,7 @@ public abstract class User implements Serializable {
 
 	public void setSSN(String ssnInput) {
 		try {
-			this.SSN = BankingUtil.validateFormatSSN(ssnInput);
+			this.SSN = BankingUtilAndDOA.validateFormatSSN(ssnInput);
 		} catch (InvalidInputException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -101,6 +101,9 @@ public abstract class User implements Serializable {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.setSSN(SSN);
+	}
+	public User() {
+		super();
 	}
 
 }

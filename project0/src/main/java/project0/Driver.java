@@ -36,7 +36,7 @@ public class Driver {
 					e.printStackTrace();
 				}
 				if(u instanceof Customer) {
-					cc.run(u);
+					cc.run(u,sc);
 				}
 			}else {
 				System.out.println("invalid input returning to main menu");

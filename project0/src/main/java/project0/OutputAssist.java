@@ -1,6 +1,7 @@
 package project0;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,7 +22,7 @@ public final class OutputAssist {
 		
 	}
 	
-	public static void displayAccounts(User user,List<Account> accounts) {
+	public static void displayAccounts(User user,Collection<Account> accounts) {
 		System.out.println("        Account Details for "+user.getFirstName()+" "+user.getLastName()+"           ");
 		System.out.println("-----------------------------------------------------------------------");
 		if(accounts.size()==0) {
@@ -36,7 +37,7 @@ public final class OutputAssist {
 		System.out.println();
 	}
 	
-	public static String accountMenuHybridCustomerView(String header,String[]options, Scanner sc, Customer user, List<Account> accounts) {
+	public static String accountMenuHybridCustomerView(String header,String[]options, Scanner sc, Customer user, Collection<Account> accounts) {
 		System.out.println();
 		
 		if(accounts.isEmpty()) {
@@ -59,7 +60,6 @@ public final class OutputAssist {
 			System.out.println("To make a withdrawl, deposit, or transfer simply type a- followed by the corresponding number displayed to the left of your account information");
 			header = "Otherwise select from one of the following options";
 		}
-		options[2]="Setup Ez transfer";
 		return menuDisplay(header,options,sc);
 		
 	}

@@ -9,19 +9,19 @@ public class Customer extends User{
 	private static final long serialVersionUID = 9093911299610170057L;
 	private List<String> acctNumbers = new ArrayList<String>();
 	private boolean hasPendingAcctRequest;
-	private String[] ez = {"",""};
+	private String[] ez = {"","",""};
 	
 	
 	public void setEz(String fromAcct,String targetAcct, String user0,String user1) {
-		ez[0]= fromAcct;
-		ez[1]= targetAcct;
-		ez[2]=user0+" and "+user1;
+		this.ez[0]= fromAcct;
+		this.ez[1]= targetAcct;
+		this.ez[2]=user0+" and "+user1;
 	}
 	
 	public void setEz(String fromAcct, String targetAcct, String user0) {
-		ez[0]= fromAcct;
-		ez[1]= targetAcct;
-		ez[2]= user0;
+		this.ez[0]= fromAcct;
+		this.ez[1]= targetAcct;
+		this.ez[2]= user0;
 	}
 	
 	public String[] getEz(){
@@ -51,8 +51,21 @@ public class Customer extends User{
 		this.acctNumbers.add(acctNumber);
 	}
 	
+	@Override
+	public String toString() {
+		String output = "";
+		output+="Username: "+ this.getUsername()+"Password: "+this.getPassword()+"Firstname : "+this.getFirstName()+"Lastname: "+this.getLastName()+"SSN: "+this.getSSN();
+		return output;
+	}
+	
 	public Customer(String username,String password,String firstName,String lastName,String SSN) throws InvalidInputException{
 		super(username, password, firstName, lastName, SSN);
 	}
+
+	public Customer() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	
 	
 }

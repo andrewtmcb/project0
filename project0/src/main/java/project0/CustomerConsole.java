@@ -1,6 +1,7 @@
 package project0;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -8,14 +9,14 @@ import java.util.Scanner;
 public class CustomerConsole implements Console{
 	
 	
-	public void run(User user) {
+	public void run(User user, Scanner scan) {
 		boolean running = true;
 		while(running) {
-			Scanner sc = new Scanner(System.in);
+			Scanner sc = scan;
 			Customer customer = (Customer) user;
 			List<Account> customersAccounts = new ArrayList<Account>();
-			Map<String, Account> allAccounts = BankingUtil.loadAccts();
-			Map<String, User> allUsers = BankingUtil.loadUsers();
+			Map<String, Account> allAccounts = BankingUtilAndDOA.loadAccts();
+			Map<String, User> allUsers = BankingUtilAndDOA.loadUsers();
 			Account selectedAccount = null;
 			String userInput = "";
 			
@@ -24,15 +25,15 @@ public class CustomerConsole implements Console{
 			}
 		
 		
-			System.out.println("                  Welcome"+customer.getFirstName());
+			System.out.println("                  Welcome "+customer.getFirstName());
 			System.out.println("--------------------------------------------------");
 			System.out.println();
 			System.out.println();
-			String options[] = {"Request new account","Add/remove joint account onwers","","logout"};
+			String options[] = {"Request new account","Add/remove joint account owners","","logout"};
 			if(customer.hasEz()) {
-				options[3]="Ez transfer to "+customer.getEz()[2];
+				options[2]="Ez transfer to "+customer.getEz()[2];
 			}else {
-				options[3]="Setup Ez transfer";
+				options[2]="Setup Ez transfer";
 			}
 			userInput = OutputAssist.accountMenuHybridCustomerView("", options, sc, customer, customersAccounts);
 			
@@ -42,13 +43,17 @@ public class CustomerConsole implements Console{
 			
 			if(userInput.startsWith("a-") && userInput.length()==3) {
 				try {
-					selectedAccount = customersAccounts.get(Integer.valueOf(userInput.substring(2)));
-					String[] accountOptions= {"Withdraw","Deposit","Transfer"};
-					userInput = OutputAssist.menuDisplay("Please select one of the following for account: "+selectedAccount.getAcctNumber(), accountOptions, sc);
-					switch (Integer.valueOf(userInput)) { 
+					selectedAccount = customersAccounts.get(Integer.valueOf(userInput.substring(2))-1);
+				}catch(ArrayIndexOutOfBoundsException e){
+					System.out.println("Invalid account selection");
+					continue;
+				}
+				String[] accountOptions= {"Withdraw","Deposit","Transfer"};
+				userInput = OutputAssist.menuDisplay("Please select one of the following for account: "+selectedAccount.getAcctNumber(), accountOptions, sc);
+				switch (Integer.valueOf(userInput)) { 
 				       
 					
-					case 1: 
+				case 1: 
 						System.out.println("How much would you like to withdraw?");
 		            	try {
 							selectedAccount.withdrawl(Double.valueOf(sc.next()));
@@ -59,7 +64,7 @@ public class CustomerConsole implements Console{
 			            break; 
 			            
 			  
-			        case 2: 
+			     case 2: 
 			        	System.out.println("How much would you like to deposit?");
 		            	try {
 							selectedAccount.deposit(Double.valueOf(sc.next()));
@@ -71,19 +76,23 @@ public class CustomerConsole implements Console{
 			        
 			        
 			        
-			        case 3:
+			      case 3:
 			        		String[] transferInput= {"","",""};
+			        		sc.nextLine();
 			            	System.out.println("Please provide the full account number you would like to transfer to");
-			            	transferInput[0]=sc.next();
+			            	transferInput[0]=sc.nextLine();
 			            	System.out.println("How much would you like to transfer?");
 			            	transferInput[1]=sc.next();
 			            	System.out.println("(Y/N) would you like to make this your ez-transfer?");
 			            	transferInput[2]=sc.next();
 			            	try {
-			            		Account accountTo = BankingUtil.findAccountByNumber(transferInput[0]);
-			            		BankingUtil.transfer(selectedAccount, accountTo, Double.valueOf(transferInput[1]));
+			            		Account accountTo = BankingUtilAndDOA.findAccountByNumber(transferInput[0]);
+			            		BankingUtilAndDOA.transfer(selectedAccount, accountTo, Double.valueOf(transferInput[1]));
 			            		if(transferInput[2].toUpperCase().equals("Y")) {
-			            			customer.setEz(selectedAccount.getAcctNumber(), accountTo.getAcctNumber(), accountTo.getUser0().getLastName());
+			            			//figure out why in gods name we need hard coding here
+			            			customer.setEz(selectedAccount.getAcctNumber(), accountTo.getAcctNumber(), "MR.white");
+			            			System.out.println(customer.getEz()[0]);
+			            			saveUserChanges(customer, allUsers);
 			            		}
 			            	}	 catch (AccountNotFoundException e) {
 								// TODO Auto-generated catch block
@@ -103,10 +112,7 @@ public class CustomerConsole implements Console{
 					
 					
 					
-				}catch(ArrayIndexOutOfBoundsException e){
-					System.out.println("Invalid account selection");
-					continue;
-				}
+				
 			}
 			
 			
@@ -139,7 +145,7 @@ public class CustomerConsole implements Console{
 		            	System.out.println("to Mr/Ms "+customer.getEz()[2]+"'s account: "+customer.getEz()[1]);
 		            	if(sc.next().toUpperCase().equals("Y")) {
 		            		System.out.println("How much would you like to transfer?");
-		            		BankingUtil.transfer(customer.getEz()[0], customer.getEz()[1], Double.valueOf(sc.next()));
+		            		BankingUtilAndDOA.transfer(customer.getEz()[0], customer.getEz()[1], Double.valueOf(sc.next()));
 		            	}
 		            }
 		            break; 
@@ -155,13 +161,13 @@ public class CustomerConsole implements Console{
 			System.out.println();
 			System.out.println("Returning to main menu");
 			saveAcctChanges(customersAccounts, allAccounts);
-			saveUserChanges(user, allUsers);
+			saveUserChanges(customer, allUsers);
 		
 		}
 	}
 	
 	public void runRegistraionService() {
-		Map<String, User> allUsers = BankingUtil.loadUsers();
+		Map<String, User> allUsers = BankingUtilAndDOA.loadUsers();
 		boolean running = true;
 		Scanner sc = new Scanner(System.in);
 		while(running) {
@@ -214,12 +220,12 @@ public class CustomerConsole implements Console{
 		for(Account acct: customersAccounts) {
 			allAccounts.replace(acct.getAcctNumber(), acct);
 		}
-		BankingUtil.saveAccts(allAccounts);
+		BankingUtilAndDOA.saveAccts(allAccounts);
 	}
 	
 	public void saveUserChanges(User customer, Map<String, User> allUsers) {
 		allUsers.replace(customer.getSSN(), customer);
-		BankingUtil.saveUsers(allUsers);
+		BankingUtilAndDOA.saveUsers(allUsers);
 		
 	}
 	

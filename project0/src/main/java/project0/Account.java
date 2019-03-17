@@ -1,8 +1,11 @@
 package project0;
 
-public class Account {
+import java.io.Serializable;
+
+public class Account implements Serializable{
+	private static final long serialVersionUID = 6487553139341416537L;
 	private String acctNumber ="";
-	private double balance;
+	private double balance=0.0;
 	private User user0;
 	private User user1;
 	
@@ -12,6 +15,9 @@ public class Account {
 		return user0;
 	}
 	
+	public User getUser1() {
+		return user1;
+	}
 	
 	public boolean isJointAcct() {
 		if(user1 == null) {
@@ -30,7 +36,7 @@ public class Account {
 		if(depositAmount<0.0) {
 			throw new InvalidInputException("Cannot deposit negative amount");
 		}else {
-			balance += depositAmount;
+			this.balance += depositAmount;
 		}
 	}
 	
@@ -42,7 +48,7 @@ public class Account {
 		}else if(withdrawAmount > balance){
 			throw new InvalidInputException("account overdraft denied");
 		}else {
-			balance += withdrawAmount;
+			balance -= withdrawAmount;
 		}
 	}
 	
@@ -87,7 +93,7 @@ public class Account {
 	
 	private void setAcctNumber() throws PreExistingKeyException {
 		if(acctNumber.equals("")) {
-			this.acctNumber = BankingUtil.generateUniqueAcctNumber();
+			this.acctNumber = BankingUtilAndDOA.generateUniqueAcctNumber();
 		}else {
 			throw new PreExistingKeyException("AccountNumber already initialized");
 		}
@@ -105,7 +111,7 @@ public class Account {
 			e.printStackTrace();
 		}
 		try {
-			setAcctNumber();
+			this.setAcctNumber();
 		} catch (PreExistingKeyException e) {
 			// this should never happen
 			e.printStackTrace();
