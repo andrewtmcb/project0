@@ -23,11 +23,7 @@ public class User implements Serializable {
 
 
 	public void setUsername(String username) throws InvalidInputException {
-		if(BankingUtilAndDOA.usernameIsUnique(username)) {
-			this.username = username;
-		}else {
-			throw new InvalidInputException("Username must be unique");
-		}
+		this.username = username;
 	}
 
 

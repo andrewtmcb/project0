@@ -30,13 +30,17 @@ public class Driver {
 				System.out.println("                 Please enter password            ");
 				String passwordInput = sc.next();
 				try {
-					u = BankingUtil.getUserByUsernameAndPassword(usernameInput, passwordInput);
+					u = BankingUtilAndDOA.getUserByUsernameAndValidatePassword(usernameInput, passwordInput);
 				} catch (InvalidInputException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				if(u instanceof Customer) {
 					cc.run(u,sc);
+				}else if (u instanceof Employee) {
+					ec.run(u, sc);
+				}else {
+					ac.run(u,sc);
 				}
 			}else {
 				System.out.println("invalid input returning to main menu");

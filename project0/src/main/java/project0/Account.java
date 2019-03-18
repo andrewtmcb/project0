@@ -54,6 +54,26 @@ public class Account implements Serializable{
 	
 	
 	
+	public void addUser(String user) {
+		User use=null;
+		try {
+			use = BankingUtilAndDOA.getUserByUsername(user);
+		} catch (InvalidInputException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		if(user0 != null) {
+			try {
+				addSecondUser(use);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else {
+			user0 = use;
+		}
+	}
+	
 	public void addSecondUser(User user1) throws Exception {
 		if(user1 == null) {
 			user1 = this.user1;
@@ -91,39 +111,33 @@ public class Account implements Serializable{
 	
 	
 	
-	private void setAcctNumber() throws PreExistingKeyException {
-		if(acctNumber.equals("")) {
-			this.acctNumber = BankingUtilAndDOA.generateUniqueAcctNumber();
-		}else {
-			throw new PreExistingKeyException("AccountNumber already initialized");
-		}
-	}
-	
-	
 	
 	
 	Account(User user0, double initDeposit){
-		user0 = this.user0;
+		this.user0 = user0;
 		try {
 			this.deposit(initDeposit);
 		} catch (InvalidInputException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		try {
-			this.setAcctNumber();
-		} catch (PreExistingKeyException e) {
-			// this should never happen
-			e.printStackTrace();
-		}
+		this.acctNumber = BankingUtilAndDOA.generateUniqueAcctNumber();
 	}
 	
 	
 	
 	
+	public void setAcctNumber(String acctNumber) {
+		this.acctNumber = acctNumber;
+	}
+
 	Account(User user0, User user1, double initDeposit){
 		this(user0,initDeposit);
 		this.user1 = user1;
+	}
+
+	public Account() {
+		// TODO Auto-generated constructor stub
 	}
 
 	

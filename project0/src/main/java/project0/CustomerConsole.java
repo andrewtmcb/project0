@@ -1,5 +1,6 @@
 package project0;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,8 +16,9 @@ public class CustomerConsole implements Console{
 			Scanner sc = scan;
 			Customer customer = (Customer) user;
 			List<Account> customersAccounts = new ArrayList<Account>();
-			Map<String, Account> allAccounts = BankingUtilAndDOA.loadAccts();
-			Map<String, User> allUsers = BankingUtilAndDOA.loadUsers();
+			Map<String, Account> allAccounts = BankingUtilAndDOA.loadAccounts();
+			Map<String, User> allUsers;
+			allUsers = BankingUtilAndDOA.loadUsers();
 			Account selectedAccount = null;
 			String userInput = "";
 			
@@ -92,7 +94,7 @@ public class CustomerConsole implements Console{
 			            			//figure out why in gods name we need hard coding here
 			            			customer.setEz(selectedAccount.getAcctNumber(), accountTo.getAcctNumber(), "MR.white");
 			            			System.out.println(customer.getEz()[0]);
-			            			saveUserChanges(customer, allUsers);
+			            			saveUserChanges(customer);
 			            		}
 			            	}	 catch (AccountNotFoundException e) {
 								// TODO Auto-generated catch block
@@ -161,7 +163,7 @@ public class CustomerConsole implements Console{
 			System.out.println();
 			System.out.println("Returning to main menu");
 			saveAcctChanges(customersAccounts, allAccounts);
-			saveUserChanges(customer, allUsers);
+			saveUserChanges(customer);
 		
 		}
 	}
@@ -197,9 +199,13 @@ public class CustomerConsole implements Console{
 			String SSNInput = sc.next();
 			
 			try {
-				Customer customer = new Customer(usernameInput,passwordInput,firstNameInput,lastNameInput,SSNInput);
-				allUsers.put(customer.getSSN(), customer);
-				saveUserChanges(customer,allUsers);
+				User customer = new Customer(usernameInput,passwordInput,firstNameInput,lastNameInput,SSNInput);
+				try {
+					BankingUtilAndDOA.createUser(customer);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				running = false;
 				} catch (InvalidInputException e) {
 				// TODO write error message reguarding invalid input
@@ -218,14 +224,22 @@ public class CustomerConsole implements Console{
 	
 	public void saveAcctChanges(List<Account> customersAccounts,Map<String, Account> allAccounts) {
 		for(Account acct: customersAccounts) {
-			allAccounts.replace(acct.getAcctNumber(), acct);
+			try {
+				BankingUtilAndDOA.updateAccount(acct);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		BankingUtilAndDOA.saveAccts(allAccounts);
 	}
 	
-	public void saveUserChanges(User customer, Map<String, User> allUsers) {
-		allUsers.replace(customer.getSSN(), customer);
-		BankingUtilAndDOA.saveUsers(allUsers);
+	public void saveUserChanges(User customer) {
+		try {
+			BankingUtilAndDOA.updateUser(customer);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
