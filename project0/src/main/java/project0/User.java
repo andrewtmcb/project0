@@ -12,7 +12,7 @@ public class User implements Serializable {
 	private String firstName;
 	private String lastName;
 	private String SSN;
-	
+	private static LoggingUtil log = new LoggingUtil();
 	
 	
 	public String getUsername() {
@@ -78,10 +78,10 @@ public class User implements Serializable {
 		try {
 			this.SSN = BankingUtilAndDOA.validateFormatSSN(ssnInput);
 		} catch (InvalidInputException e) {
-			// TODO Auto-generated catch block
+			log.logError(e.getMessage());
 			e.printStackTrace();
 		} catch (PreExistingKeyException e) {
-			// TODO Auto-generated catch block
+			log.logError(e.getMessage());
 			e.printStackTrace();
 		}
 	}

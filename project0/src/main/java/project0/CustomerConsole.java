@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class CustomerConsole implements Console{
-	
+	private LoggingUtil log = new LoggingUtil();
 	
 	public void run(User user, Scanner scan) {
 		boolean running = true;
@@ -16,7 +16,13 @@ public class CustomerConsole implements Console{
 			Scanner sc = scan;
 			Customer customer = (Customer) user;
 			List<Account> customersAccounts = new ArrayList<Account>();
-			Map<String, Account> allAccounts = BankingUtilAndDOA.loadAccounts();
+			Map<String, Account> allAccounts = null;
+			try {
+				allAccounts = BankingUtilAndDOA.loadAccounts();
+			} catch (InvalidInputException | PreExistingKeyException e2) {
+				log.logError(e2.getMessage());
+				e2.printStackTrace();
+			}
 			Map<String, User> allUsers;
 			allUsers = BankingUtilAndDOA.loadUsers();
 			Account selectedAccount = null;
@@ -96,8 +102,8 @@ public class CustomerConsole implements Console{
 			            			System.out.println(customer.getEz()[0]);
 			            			saveUserChanges(customer);
 			            		}
-			            	}	 catch (AccountNotFoundException e) {
-								// TODO Auto-generated catch block
+			            	}	 catch (AccountNotFoundException | NumberFormatException | InvalidInputException | SQLException e) {
+								log.logError(e.getMessage());
 								e.printStackTrace();
 							}
 			    
@@ -203,7 +209,7 @@ public class CustomerConsole implements Console{
 				try {
 					BankingUtilAndDOA.createUser(customer);
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
+					log.logError(e.getMessage());
 					e.printStackTrace();
 				}
 				running = false;

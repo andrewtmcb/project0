@@ -1,11 +1,16 @@
 package project0;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public final class OutputAssist {
+
+	private static LoggingUtil log = new LoggingUtil();
+	
 	
 	public static String menuDisplay(String header,String[] options, Scanner sc){
 		if(header.equals("")) {header = "Please select from the following";}
@@ -63,5 +68,88 @@ public final class OutputAssist {
 		return menuDisplay(header,options,sc);
 		
 	}
+	
+	
+	
+	
+	//Important not reguarding this method: when an account is created for a user, a SQL trigger will automatically set hasPendingAccountApproval for the user to false
+	public static boolean accountApprovalMenu(Scanner sc) {
+		log.logDebug("made it to the approval menu");
+		ArrayList<String> usersWithPendingAccounts = BankingUtilAndDOA.loadUsernamesWithPendingAccount();
+		log.logDebug("made it past loading mending accounts");
+		log.logDebug(usersWithPendingAccounts.toString());
+		int i = 1;
+		boolean persist = true;
+		while(persist) {
+			log.logDebug("made it into the while loop");
+			if(usersWithPendingAccounts.size()==0) {
+				log.logDebug("looks like this pending users is somehow empty");
+				log.logInfo("No pending accounts exist  ---  returning to main menu");
+				persist = false;
+			}else {
+				log.logDebug("somehow made it past null arraylist check");
+				System.out.println();
+				System.out.println("     Users with Pending Approval  ----   Select an account to approve");
+				System.out.println("----------------------------------------------------------------------");
+				for (String username: usersWithPendingAccounts) {
+					System.out.println("("+i+")   "+username);
+					i++;
+				}
+				System.out.println("("+i+")      Return to main menu");
+			}
+			int selection = Integer.valueOf(sc.next());
+			if(selection > 1 || selection <usersWithPendingAccounts.size()) {
+				log.logInfo("Returning to Main Menu");
+				persist = false;
+			}else {
+				Account newAccount = new Account(usersWithPendingAccounts.get(i-1));
+				try {
+					BankingUtilAndDOA.createAccount(newAccount);
+					log.logInfo("Account created for "+usersWithPendingAccounts.get(i-1));
+					usersWithPendingAccounts.remove(i-1);
+				} catch (SQLException e) {
+					log.logError("issue creating account "+e.getMessage());
+					e.printStackTrace();
+				}
+			}	
+		}
+		return true;
+	}
+	
+	
+	
+	
+	
+	
+	public static Account selectUsersAccount(User user) {
+		int i = 1;
+		Map<String, Account> allAccounts = null;
+		try {
+			allAccounts = BankingUtilAndDOA.loadAccounts();
+		} catch (InvalidInputException | PreExistingKeyException e) {
+			log.logError(e.getMessage());
+			e.printStackTrace();
+		}
+		Collection<Account> allAccountsCollection = allAccounts.values();
+		ArrayList<Account> customersAccounts = new ArrayList<Account>();
+		for(Account a :allAccountsCollection) {
+			if(a.getUser0().equals(user)||a.getUser1().equals(user)) {
+				customersAccounts.add(a);
+			}
+		}
+		System.out.println("        Account Details for "+user.getFirstName()+" "+user.getLastName()+"           ");
+		System.out.println("-----------------------------------------------------------------------");
+		if(customersAccounts.size()==0) {
+		System.out.println("                       No active accounts              ");
+		}else {
+			for(Account a: customersAccounts) {
+				System.out.println("("+i+")   "+a.getAcctNumber()+"         balance:"+a.getBalance());
+				i++;
+			}
+		}
+		System.out.println();
+		return customersAccounts.get(i);
+	}
+	
 
 }

@@ -12,13 +12,6 @@ import java.util.Scanner;
 
 public class Test {
 	public static void main(String[] args) throws InvalidInputException, SQLException {
-		User c1 = new Customer("AutoHotkey","AutoHotkey98","Auto","Hotkey","878649597");
-		Account a1 = new Account(c1,1000.00);
-		//TempDoaForTesting.createAccount(a1);
-		//System.out.println("Much Succcccses");
-		a1.deposit(1000000.00);
-		TempDoaForTesting.updateAccount(a1);
-		System.out.println("Even More Succcccses");
-		
+		System.out.println(BankingUtilAndDOA.loadUsernamesWithPendingAccount().get(0));
 	}
 }

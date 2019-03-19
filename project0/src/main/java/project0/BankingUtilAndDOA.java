@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,7 +24,28 @@ public final class BankingUtilAndDOA{
 	private static final String USERS_FILENAME = "bank_user.dat";
 	private static final String ACCTS_FILENAME = "bank_acct.dat";
 	private static Connection conn = ConnectionFactory.getConnection();
+	private static LoggingUtil log = new LoggingUtil();
 	
+	
+	public static ArrayList<String> loadUsernamesWithPendingAccount() {
+		ArrayList<String> pendingAccountUsernames = new ArrayList<String>();
+		String sql ="select find_users_with_pending_account_apporval();";
+		try {
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			while (rs.next()) {
+				pendingAccountUsernames.add(rs.getString(1));
+			}
+
+		} catch (SQLException e) {
+			log.logError(e.getMessage());
+			e.printStackTrace();
+		}
+		
+		
+		
+		return pendingAccountUsernames;
+	}
 	
 	public static  Map<String,User> loadUsers() {
 		Map<String,User> retmap = new HashMap<String,User>();
@@ -39,13 +61,13 @@ public final class BankingUtilAndDOA{
 					try {
 						ret.setUsername(rs.getString("username"));
 					} catch (InvalidInputException e) {
-						// TODO Auto-generated catch block
+						log.logError(e.getMessage());
 						e.printStackTrace();
 					}
 					try {
 						ret.setPassword(rs.getString("password"));
 					} catch (InvalidInputException e) {
-						// TODO Auto-generated catch block
+						log.logError(e.getMessage());
 						e.printStackTrace();
 					}
 					ret.setFirstName(rs.getString("firstname"));
@@ -59,13 +81,13 @@ public final class BankingUtilAndDOA{
 					try {
 						ret.setUsername(rs.getString("username"));
 					} catch (InvalidInputException e) {
-						// TODO Auto-generated catch block
+						log.logError(e.getMessage());
 						e.printStackTrace();
 					}
 					try {
 						ret.setPassword(rs.getString("password"));
 					} catch (InvalidInputException e) {
-						// TODO Auto-generated catch block
+						log.logError(e.getMessage());
 						e.printStackTrace();
 					}
 					ret.setFirstName(rs.getString("firstname"));
@@ -77,13 +99,13 @@ public final class BankingUtilAndDOA{
 					try {
 						ret.setUsername(rs.getString("username"));
 					} catch (InvalidInputException e) {
-						// TODO Auto-generated catch block
+						log.logError(e.getMessage());
 						e.printStackTrace();
 					}
 					try {
 						ret.setPassword(rs.getString("password"));
 					} catch (InvalidInputException e) {
-						// TODO Auto-generated catch block
+						log.logError(e.getMessage());
 						e.printStackTrace();
 					}
 					ret.setFirstName(rs.getString("firstname"));
@@ -93,7 +115,7 @@ public final class BankingUtilAndDOA{
 				}
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			log.logError(e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -107,7 +129,7 @@ public final class BankingUtilAndDOA{
 				retmap.replace(retCusty.getUsername(), retCusty);
 			}
 		}catch (SQLException e) {
-			// TODO Auto-generated catch block
+			log.logError(e.getMessage());
 			e.printStackTrace();
 		}
 		return retmap;	
@@ -132,7 +154,7 @@ public final class BankingUtilAndDOA{
 				retmap.put(ret.getAcctNumber(), ret);
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			log.logError(e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -146,7 +168,7 @@ public final class BankingUtilAndDOA{
 				retmap.replace(ret.getAcctNumber(), ret);
 			}
 		}catch (SQLException e) {
-			// TODO Auto-generated catch block
+			log.logError(e.getMessage());
 			e.printStackTrace();
 		}
 		return retmap;	
@@ -443,25 +465,7 @@ public final class BankingUtilAndDOA{
 	}
 	
 	public static String validateFormatSSN(String SSN) throws InvalidInputException, PreExistingKeyException {
-		String validSSN ="";
-		if(SSN.length()==11) {
-			return validSSN;
-		}
-		if(SSN.length()!=9) {
-			throw new InvalidInputException("invalid SSN");
-		}else {
-			for(int i = 0; i<9;i++) {
-				if(Character.isDigit(SSN.charAt(i))) {
-					validSSN += SSN.charAt(i);
-				}else {
-					throw new InvalidInputException("SSN must consist of only numbers");
-				}
-				if(i == 2 || i ==4) {
-					validSSN += "-";
-				}
-			}
-		}
-		return validSSN;
+		return SSN;
 		
 	}
 	
@@ -518,16 +522,16 @@ public final class BankingUtilAndDOA{
 		try {
 			bankAccounts = loadAccounts();
 		} catch (InvalidInputException e) {
-			// TODO Auto-generated catch block
+			log.logError(e.getMessage());
 			e.printStackTrace();
 		} catch (PreExistingKeyException e) {
-			// TODO Auto-generated catch block
+			log.logError(e.getMessage());
 			e.printStackTrace();
 		}
 		try {
 			transfer(bankAccounts.get(accountNumber0), bankAccounts.get(accountNumber1), transferAmount);
 		} catch (InvalidInputException | SQLException e) {
-			// TODO Auto-generated catch block
+			log.logError(e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -541,7 +545,7 @@ public final class BankingUtilAndDOA{
 			accountTo.deposit(transferAmount);
 			updateAccount(accountFrom);
 			updateAccount(accountTo);
-			System.out.println("Transfer Succssful");
+			log.logInfo("Transfer Succssful");
 		
 	}
 	
@@ -553,10 +557,10 @@ public final class BankingUtilAndDOA{
 		try {
 			bankAccounts = loadAccounts();
 		} catch (InvalidInputException e) {
-			// TODO Auto-generated catch block
+			log.logError(e.getMessage());
 			e.printStackTrace();
 		} catch (PreExistingKeyException e) {
-			// TODO Auto-generated catch block
+			log.logError(e.getMessage());
 			e.printStackTrace();
 		}
 		if(bankAccounts.containsKey(accountNumber)) {
@@ -566,13 +570,8 @@ public final class BankingUtilAndDOA{
 		}
 	}
 	
-	public static void approveAccount() {
-		
-	}
-	
-	public static void customerInformationOutput(String username){
-		
-	}
+
+
 	private BankingUtilAndDOA() {
 		
 	}

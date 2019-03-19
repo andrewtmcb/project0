@@ -26,7 +26,7 @@ public class EmployeeAndAdminConsoleTest {
 	tum = new HashMap<String,User>();
 	tam.put(ta1.getAcctNumber(), ta1);tam.put(ta2.getAcctNumber(), ta2);
 	tum.put(tc1.getSSN(), tc1);tum.put(tc2.getSSN(),tc2);
-	BankingUtil.saveAccts(tam);BankingUtil.saveUsers(tum);
+	//BankingUtil.saveAccts(tam);BankingUtil.saveUsers(tum);
 	}
 	
 	/*******************************************************************

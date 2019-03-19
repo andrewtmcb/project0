@@ -8,11 +8,10 @@ import java.util.Scanner;
 
 public class EmployeeConsole extends CustomerConsole {
 	
-
+	private LoggingUtil log = new LoggingUtil();
 		
 		@Override
 		public void run(User user, Scanner scan) {
-			Scanner sc = scan;
 			boolean running = true;
 			String userInput;
 			while(running) {
@@ -20,52 +19,29 @@ public class EmployeeConsole extends CustomerConsole {
 				System.out.println("--------------------------------------------------");
 				System.out.println();
 				System.out.println();
-				String options[] = {"View Customer Detials","Approve Pending Account Request","","logout"};
-				userInput = OutputAssist.menuDisplay("Please select one of the following options", options, sc);
+				String options[] = {"View Customer Detials","Approve Pending Account Request","logout"};
+				userInput = OutputAssist.menuDisplay("Please select one of the following options", options, scan);
+				log.logDebug(userInput);
 				switch (Integer.valueOf(userInput)) { 
 			       
 				
 				case 1: 
 						System.out.println("Please provide a username:");
-		            	BankingUtilAndDOA.customerInformationOutput(userInput);
+		            	// TODO write customer information method in Output Assist
 			            break; 
 			            
 			  
 			     case 2: 
-			        	System.out.println("How much would you like to deposit?");
-		            	try {
-							selectedAccount.deposit(Double.valueOf(sc.next()));
-						} catch (NumberFormatException | InvalidInputException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-			          break; 
+			    	 	log.logDebug("made it to case 2");
+			        	boolean didItWork = OutputAssist.accountApprovalMenu(scan);
+			        	log.logDebug(String.valueOf(didItWork));
+			        	break; 
 			        
 			        
 			        
 			      case 3:
-			        		String[] transferInput= {"","",""};
-			        		sc.nextLine();
-			            	System.out.println("Please provide the full account number you would like to transfer to");
-			            	transferInput[0]=sc.nextLine();
-			            	System.out.println("How much would you like to transfer?");
-			            	transferInput[1]=sc.next();
-			            	System.out.println("(Y/N) would you like to make this your ez-transfer?");
-			            	transferInput[2]=sc.next();
-			            	try {
-			            		Account accountTo = BankingUtilAndDOA.findAccountByNumber(transferInput[0]);
-			            		BankingUtilAndDOA.transfer(selectedAccount, accountTo, Double.valueOf(transferInput[1]));
-			            		if(transferInput[2].toUpperCase().equals("Y")) {
-			            			//figure out why in gods name we need hard coding here
-			            			customer.setEz(selectedAccount.getAcctNumber(), accountTo.getAcctNumber(), "MR.white");
-			            			System.out.println(customer.getEz()[0]);
-			            			saveUserChanges(customer);
-			            		}
-			            	}	 catch (AccountNotFoundException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-			    
+			        	System.out.println("Sending you back to the main menu");
+			        	running = false;
 			            
 			            break; 
 					

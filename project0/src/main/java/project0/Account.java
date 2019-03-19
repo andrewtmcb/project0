@@ -1,6 +1,7 @@
 package project0;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class Account implements Serializable{
 	private static final long serialVersionUID = 6487553139341416537L;
@@ -8,7 +9,7 @@ public class Account implements Serializable{
 	private double balance=0.0;
 	private User user0;
 	private User user1;
-	
+	private static LoggingUtil log = new LoggingUtil();
 	
 	
 	public User getUser0(){
@@ -58,9 +59,9 @@ public class Account implements Serializable{
 		User use=null;
 		try {
 			use = BankingUtilAndDOA.getUserByUsername(user);
-		} catch (InvalidInputException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		} catch (InvalidInputException e7) {
+			log.logError(e7.getMessage());
+			e7.printStackTrace();
 		}
 		if(user0 != null) {
 			try {
@@ -111,14 +112,18 @@ public class Account implements Serializable{
 	
 	
 	
-	
+	Account(String username0){
+		Map<String,User> um = BankingUtilAndDOA.loadUsers();
+		this.user0 = um.get(username0);
+		this.acctNumber = BankingUtilAndDOA.generateUniqueAcctNumber();
+	}
 	
 	Account(User user0, double initDeposit){
 		this.user0 = user0;
 		try {
 			this.deposit(initDeposit);
 		} catch (InvalidInputException e) {
-			// TODO Auto-generated catch block
+			log.logError(e.getMessage());
 			e.printStackTrace();
 		}
 		this.acctNumber = BankingUtilAndDOA.generateUniqueAcctNumber();
