@@ -21,20 +21,28 @@ public class EmployeeConsole extends CustomerConsole {
 				System.out.println();
 				String options[] = {"View Customer Detials","Approve Pending Account Request","logout"};
 				userInput = OutputAssist.menuDisplay("Please select one of the following options", options, scan);
-				log.logDebug(userInput);
+				//log.logDebug(userInput);
 				switch (Integer.valueOf(userInput)) { 
 			       
 				
 				case 1: 
 						System.out.println("Please provide a username:");
-		            	// TODO write customer information method in Output Assist
+					try {
+						User u = BankingUtilAndDOA.getUserByUsername(scan.next());
+						
+						System.out.println("First Name: "+u.getFirstName()+" Last Name: "+u.getLastName()+"   SSN:   xxx-xx-"+u.getSSN().substring(u.getSSN().length()-5));
+						System.out.println("Account:  "+BankingUtilAndDOA.generateUniqueAcctNumber()+"   Balance: $0.00");
+					} catch (InvalidInputException e) {
+						log.logError(e.getMessage());
+						e.printStackTrace();
+					}
 			            break; 
 			            
 			  
 			     case 2: 
-			    	 	log.logDebug("made it to case 2");
+			    	 	//log.logDebug("made it to case 2");
 			        	boolean didItWork = OutputAssist.accountApprovalMenu(scan);
-			        	log.logDebug(String.valueOf(didItWork));
+			        	//log.logDebug(String.valueOf(didItWork));
 			        	break; 
 			        
 			        

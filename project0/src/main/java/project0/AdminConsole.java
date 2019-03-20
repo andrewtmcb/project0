@@ -16,7 +16,7 @@ public class AdminConsole implements Console {
 				System.out.println("--------------------------------------------------");
 				System.out.println();
 				System.out.println();
-				String options[] = {"View/Edit Customer Detials","Approve Pending Account Request","","logout"};
+				String options[] = {"View/Edit Customer Detials","Approve Pending Account Request","logout"};
 				userInput = OutputAssist.menuDisplay("Please select one of the following options", options, sc);
 				switch (Integer.valueOf(userInput)) { 
 			       
@@ -31,7 +31,8 @@ public class AdminConsole implements Console {
 						log.logError(e2.getMessage());
 						e2.printStackTrace();
 					}
-						Account selectedAccount = OutputAssist.selectUsersAccount(custy);
+						System.out.println(custy.getUsername());
+						Account selectedAccount = OutputAssist.selectUsersAccount(custy,sc);
 						String[] accountOptions= {"Withdraw","Deposit","Transfer","Delete User and All Accounts"};
 						userInput = OutputAssist.menuDisplay("Please select one of the following for account: "+selectedAccount.getAcctNumber(), accountOptions, sc);
 						switch (Integer.valueOf(userInput)) { 
@@ -78,6 +79,23 @@ public class AdminConsole implements Console {
 					            
 					            break; 
 							
+					            
+					            
+					      	case 4: 
+							try {
+								BankingUtilAndDOA.deleteUserAndAllAccoutns(custy.getUsername());
+							} catch (SQLException e) {
+								log.logError(e.getMessage());
+								e.printStackTrace();
+							}
+							log.logInfo("Accounts pending accounts require approval ------ redirecting");
+					          break;        
+					            
+					          
+					          
+					          
+					          
+					          
 					       default:
 					    	   System.out.println("Invalid section, returning to main menu");
 							}

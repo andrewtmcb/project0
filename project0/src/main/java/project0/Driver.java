@@ -8,6 +8,9 @@ public class Driver {
 	private static CustomerConsole cc = new CustomerConsole();
 	private static EmployeeConsole ec = new EmployeeConsole();
 	private static AdminConsole ac = new AdminConsole();
+	private static LoggingUtil log = new LoggingUtil();
+	
+	
 	
 	public static void main(String[] args) {
 		while(running) {
@@ -32,14 +35,13 @@ public class Driver {
 				try {
 					u = BankingUtilAndDOA.getUserByUsernameAndValidatePassword(usernameInput, passwordInput);
 				} catch (InvalidInputException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.logError(e.getMessage());
 				}
 				if(u instanceof Customer) {
 					cc.run(u,sc);
 				}else if (u instanceof Employee) {
 					ec.run(u, sc);
-				}else {
+				}else if(u instanceof Admin) {
 					ac.run(u,sc);
 				}
 			}else {

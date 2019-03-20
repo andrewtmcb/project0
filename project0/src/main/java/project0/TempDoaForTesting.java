@@ -212,7 +212,7 @@ public class TempDoaForTesting {
 	}
 	
 	
-	*/
+	
 	
 	public static void updateAccount(Account a) throws SQLException {
 		PreparedStatement updateAccountTable = null;
@@ -295,4 +295,7 @@ public class TempDoaForTesting {
 		    }
 		}
 	}
+	*/
+	
+	
 }

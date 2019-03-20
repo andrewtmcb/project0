@@ -499,7 +499,8 @@ public final class BankingUtilAndDOA{
 				return u;
 			}
 		}
-		throw new InvalidInputException("no matching username found");
+		log.logError("no matching username found");
+		throw new InvalidInputException("");
 	}
 	
 	public static boolean usernameIsUnique(String username) {
@@ -570,11 +571,41 @@ public final class BankingUtilAndDOA{
 		}
 	}
 	
+	
+	
+	
+	public static void deleteUserAndAllAccoutns(String username) throws SQLException {
+		PreparedStatement deleteUserTable = null;
+		PreparedStatement deleteUserAccountTable = null;
+		int userid = 0;
+		 String insertStatement = "DELETE FROM proj0.user_account_table WHERE username =  ?";
+		 String insertStatement2 = "DELETE FROM proj0.user_table WHERE username =  ?";
+		 conn.setAutoCommit(false);
+		 deleteUserAccountTable = conn.prepareStatement(insertStatement);
+		 deleteUserTable = conn.prepareStatement(insertStatement2);
+		 try {
+				deleteUserAccountTable = conn.prepareStatement(insertStatement);
+				deleteUserAccountTable.setString(1, username);
+				deleteUserAccountTable.execute();
+				conn.commit();
+				deleteUserTable = conn.prepareStatement(insertStatement2);
+				deleteUserTable.setString(1, username);
+				deleteUserTable.execute();
+				conn.commit();
+		 }catch(SQLException e) {
+			log.logError(e.getMessage());
+		 }
+	}
 
 
 	private BankingUtilAndDOA() {
 		
 	}
+
+	public BankingUtilAndDOA(Connection conn2) {
+		// TODO Auto-generated constructor stub
+	}
+
 	
 	
 
